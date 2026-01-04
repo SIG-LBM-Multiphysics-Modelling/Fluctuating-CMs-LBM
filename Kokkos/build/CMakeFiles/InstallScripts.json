@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/user/Documents/GitHub/CODES/FluctuatingLBM/Kokkos/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
