@@ -51,10 +51,10 @@ struct D3Q27{
 // ---- Make Params runtime (so we can change kBT, rho0, etc.)
 struct Params{
     double rho0 = 1.0;
-    double U_ref = 0.01;
-    int nx = 50;
-    int ny = 50;
-    int nz = 50;
+    double U_ref = 0.1;
+    int nx = 20;
+    int ny = 80;
+    int nz = 40;
 
     double ni = 0.1;
     double tau = ni*3.0 + 0.5;
