@@ -1,7 +1,7 @@
 set(CMAKE_C_COMPILER "/usr/bin/cc")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "AppleClang")
-set(CMAKE_C_COMPILER_VERSION "17.0.0.17000603")
+set(CMAKE_C_COMPILER_VERSION "21.0.0.21000101")
 set(CMAKE_C_COMPILER_VERSION_INTERNAL "")
 set(CMAKE_C_COMPILER_WRAPPER "")
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "17")
@@ -23,6 +23,7 @@ set(CMAKE_C_COMPILER_ARCHITECTURE_ID "arm64")
 
 
 
+
 set(CMAKE_AR "/usr/bin/ar")
 set(CMAKE_C_COMPILER_AR "")
 set(CMAKE_RANLIB "/usr/bin/ranlib")
@@ -32,7 +33,7 @@ set(CMAKE_LINKER_LINK "")
 set(CMAKE_LINKER_LLD "")
 set(CMAKE_C_COMPILER_LINKER "/Library/Developer/CommandLineTools/usr/bin/ld")
 set(CMAKE_C_COMPILER_LINKER_ID "AppleClang")
-set(CMAKE_C_COMPILER_LINKER_VERSION 1230.1)
+set(CMAKE_C_COMPILER_LINKER_VERSION 1267)
 set(CMAKE_C_COMPILER_LINKER_FRONTEND_VARIANT GNU)
 set(CMAKE_MT "")
 set(CMAKE_TAPI "/Library/Developer/CommandLineTools/usr/bin/tapi")
@@ -78,7 +79,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/usr/lib/clang/17/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include;/Library/Developer/CommandLineTools/usr/include")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/usr/local/include;/Library/Developer/CommandLineTools/usr/lib/clang/21/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include;/Library/Developer/CommandLineTools/usr/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
 set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks")

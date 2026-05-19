@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/user/Documents/GitHub/CODES/FluctuatingLBM/Kokkos/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp" "CMakeFiles/D3Q27_BGK_Fluct_Tests.dir/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp.o" "gcc" "CMakeFiles/D3Q27_BGK_Fluct_Tests.dir/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp.o.d"
+  "/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp" "CMakeFiles/D3Q27_BGK_Fluct_Tests.dir/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp.o" "gcc" "CMakeFiles/D3Q27_BGK_Fluct_Tests.dir/src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
