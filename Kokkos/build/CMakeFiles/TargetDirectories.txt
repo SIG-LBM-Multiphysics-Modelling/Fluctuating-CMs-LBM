@@ -1,6 +1,0 @@
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D2Q9_CMS_Fluct_Tests.dir
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D2Q9_BGK_Fluct_Tests.dir
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D3Q27_CMS_Fluct_Tests.dir
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D3Q27_BGK_Fluct_Tests.dir
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/edit_cache.dir
-/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/rebuild_cache.dir

@@ -17,12 +17,14 @@ add_executable(D2Q9_CMS_Fluct_Tests src/2D/D2Q9_CMS_Fluct_Tests.cpp)
 add_executable(D2Q9_BGK_Fluct_Tests src/2D/D2Q9_BGK_Fluct_Tests.cpp)
 add_executable(D3Q27_CMS_Fluct_Tests src/3D/Q27/D3Q27_CMS_Fluct_Tests.cpp)
 add_executable(D3Q27_BGK_Fluct_Tests src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp)
+add_executable(D3Q27_CMS_Fluct_Tests_9 src/3D/Q27/D3Q27_CMS_Fluct_Tests_case9_3D.cpp)
 
 # Add the include directory for headers
 target_include_directories(D2Q9_CMS_Fluct_Tests PRIVATE include)
 target_include_directories(D2Q9_BGK_Fluct_Tests PRIVATE include)
 target_include_directories(D3Q27_CMS_Fluct_Tests PRIVATE include)
 target_include_directories(D3Q27_BGK_Fluct_Tests PRIVATE include)
+target_include_directories(D3Q27_CMS_Fluct_Tests_9 PRIVATE include)
 
 # Link Kokkos and stdc++fs to the target
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0.0")
@@ -31,10 +33,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_L
     target_link_libraries(D2Q9_BGK_Fluct_Tests Kokkos::kokkos stdc++fs)
     target_link_libraries(D3Q27_CMS_Fluct_Tests Kokkos::kokkos stdc++fs)
     target_link_libraries(D3Q27_BGK_Fluct_Tests Kokkos::kokkos stdc++fs)
+    target_link_libraries(D3Q27_CMS_Fluct_Tests_9 Kokkos::kokkos stdc++fs)
 else()
     # For GCC 9 and later, stdc++fs is not needed
     target_link_libraries(D2Q9_CMS_Fluct_Tests Kokkos::kokkos)
     target_link_libraries(D2Q9_BGK_Fluct_Tests Kokkos::kokkos)
     target_link_libraries(D3Q27_CMS_Fluct_Tests Kokkos::kokkos)
     target_link_libraries(D3Q27_BGK_Fluct_Tests Kokkos::kokkos)
+    target_link_libraries(D3Q27_CMS_Fluct_Tests_9 Kokkos::kokkos)
 endif()
