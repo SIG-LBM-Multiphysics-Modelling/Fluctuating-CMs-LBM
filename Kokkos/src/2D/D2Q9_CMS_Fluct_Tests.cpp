@@ -218,6 +218,15 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         const double eta7 = rng.normal();
         const double eta8 = rng.normal();
         rng_pool.free_state(rng);
+        double phi[9];
+
+        phi[0] = phi[1] = phi[2] = 0.;
+        phi[3] = std::sqrt(1.*(2.-1.)*R*parameters.kBT*lattice.b[3]/lattice.cs2)*eta3;
+        phi[4] = std::sqrt(parameters.omega*(2.-parameters.omega)*R*parameters.kBT*lattice.b[4]/lattice.cs2)*eta4;
+        phi[5] = std::sqrt(parameters.omega*(2.-parameters.omega)*R*parameters.kBT*lattice.b[5]/lattice.cs2)*eta5;
+        phi[6] = std::sqrt(1.*(2.-1.)*R*parameters.kBT*lattice.b[6]/lattice.cs2)*eta6;
+        phi[7] = std::sqrt(1.*(2.-1.)*R*parameters.kBT*lattice.b[7]/lattice.cs2)*eta7;
+        phi[8] = std::sqrt(1.*(2.-1.)*R*parameters.kBT*lattice.b[8]/lattice.cs2)*eta8;
 
         double r4 = f1(x,y,1)-f1(x,y,2)+f1(x,y,3)-f1(x,y,4);
         double r5 = f1(x,y,5)-f1(x,y,6)+f1(x,y,7)-f1(x,y,8);
@@ -227,12 +236,12 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         
         double k1 = 0.5*Fx;
         double k2 = 0.5*Fy;
-        double k3 = 2.*std::sqrt(R*parameters.kBT)*lattice.cs*eta3;
-        k4 = parameters.omega1*k4 + 2.*std::sqrt(R*parameters.kBT*parameters.omega*(2.-parameters.omega))*lattice.cs*eta4;
-        k5 = parameters.omega1*k5 + std::sqrt(R*parameters.kBT*parameters.omega*(2.-parameters.omega))*lattice.cs*eta5;
-        double k6 = 0.5*Fy*lattice.cs2 + std::sqrt(2.*R*parameters.kBT)*lattice.cs2*eta6;
-        double k7 = 0.5*Fx*lattice.cs2 + std::sqrt(2.*R*parameters.kBT)*lattice.cs2*eta7;
-        double k8 = 2.*std::sqrt(R*parameters.kBT)*lattice.cs3*eta8;
+        double k3 = phi[3];
+        k4 = parameters.omega1*k4 + phi[4];
+        k5 = parameters.omega1*k5 + phi[5];
+        double k6 = 0.5*Fy*lattice.cs2 + phi[6];
+        double k7 = 0.5*Fx*lattice.cs2 + phi[7];
+        double k8 = phi[8];
         
         double r1 = k1+R*U;
         double r2 = k2+R*V;

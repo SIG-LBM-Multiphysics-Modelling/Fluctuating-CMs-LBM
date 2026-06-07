@@ -21,6 +21,7 @@ const bool plot_vtk = true;
 typedef Kokkos::View<double*> View1DArray;
 typedef Kokkos::View<double**> View2DArray;
 typedef Kokkos::View<double***> View3DArray;
+typedef Kokkos::View<double****> View4DArray;
 
 struct D2Q9{
   // lattice velocities
@@ -37,7 +38,7 @@ struct D2Q9{
     const double b[np];
 
     D2Q9():
-         b{1., 1./3., 1./3., 4./9., 4./9., 4./9., 1./9., 2./27., 2./27., 4./81.}
+         b{1., 1./3., 1./3., 4./9., 4./9., 1./9., 2./27., 2./27., 4./81.},
         cx{0, 1, 0, -1,  0, 1, -1, -1,  1},
         cy{0, 0, 1,  0, -1, 1,  1, -1, -1},
        opp{0, 3, 4,  1,  2, 7,  8,  5,  6},
@@ -48,9 +49,8 @@ struct D2Q9{
 struct Params{
             double rho0 = 1.0;
             double U_ref = 0.01;
-            int nx = 20;
-            int ny = 10;
-            int nz = 15;
+            int nx = 200;
+            int ny = 200;
 
             double ni = 0.1;
             double tau = ni*3.0 + 0.5;
@@ -159,7 +159,9 @@ static StatsSimple compute_stats_simple(View2DArray u, View2DArray v, const Para
 }
 
 void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1, View3DArray f2,
-                const D2Q9 lattice, const Params parameters, View2DArray M) {
+                const D2Q9 lattice, const Params parameters, View2DArray M, View1DArray H1, 
+                View2DArray H2, View3DArray H3, View4DArray H4, View2DArray Id)
+                 {
 
     // Kokkos lambda for initialization
     Kokkos::parallel_for("InitializeState",
@@ -207,10 +209,10 @@ void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1
       hat_[1] = lattice.cy[k];
       for(int a=0; a<2; a++)
       {
-        H1(a) = hat_a; 
+        H1(a) = hat_[a]; 
         for(int b=0; b<2; b++)
         {
-          H2(a,b) = hat[a]*hat_[b]-Id(a,b);
+          H2(a,b) = hat_[a]*hat_[b]-Id(a,b);
           for(int c=0; c<2; c++)
           {
             H3(a,b,c) = hat_[a]*hat_[b]*hat_[c]-hat_[a]*Id(b,c)+hat_[a]*Id(a,c)+hat_[a]*Id(a,b);
@@ -230,7 +232,8 @@ void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1
 }
 
 void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View2DArray v,
-            const D2Q9 lattice, const Params parameters, RNGPool rng_pool, View2DArray M)
+            const D2Q9 lattice, const Params parameters, RNGPool rng_pool, View2DArray M, View1DArray H1, 
+                View2DArray H2, View3DArray H3, View4DArray H4, View2DArray Id)
 {
 
     // Kokkos parallel loop for the lattice Boltzmann algorithm
@@ -267,66 +270,57 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         double coeff = R*parameters.kBT*parameters.omega*(2.-parameters.omega)/lattice.cs2;
         double etas[9] = {0., 0., 0., eta3, eta4, eta5, eta6, eta7, eta8};
 
-        a_eq_0 = R;
-        a_eq_1x = a_eq_0*U;
-        a_eq_1y = a_eq_0*V;
-        a_eq_2xx = a_eq_1x*U;
-        a_eq_2yy = a_eq_1y*V;
-        a_eq_2xy = a_eq_1x*V;
-        a_eq_2yx = a_eq_1y*U;
-        a_eq_3xxx = a_eq_2xx*U;
-        a_eq_3yxx = a_eq_2yx*U;
-        a_eq_3xyx = a_eq_2xy*U;
-        a_eq_3xxy = a_eq_2xx*V;
-        a_eq_3xyy = a_eq_2xy*V;
-        a_eq_3yyx = a_eq_2yy*U;
-        a_eq_3yxy = a_eq_2yx*V;
-        a_eq_3yyy = a_eq_2yy*V;
-        a_eq_4xxxx = a_eq_3xxx*U;
-        a_eq_4xxxy = a_eq_3xxx*V;
-        a_eq_4xxyx = a_eq_3xxy*U;
-        a_eq_4xyxx = a_eq_3xyx*U;
-        a_eq_4yxxx = a_eq_3yxx*U;
+        double a_eq_0 = R;
+        double a_eq_1x = a_eq_0*U;
+        double a_eq_1y = a_eq_0*V;
+        double a_eq_2xx = a_eq_1x*U;
+        double a_eq_2yy = a_eq_1y*V;
+       double  a_eq_2xy = a_eq_1x*V;
+        double a_eq_2yx = a_eq_1y*U;
+        double a_eq_3xxx = a_eq_2xx*U;
+        double a_eq_3yxx = a_eq_2yx*U;
+        double a_eq_3xyx = a_eq_2xy*U;
+        double a_eq_3xxy = a_eq_2xx*V;
+        double a_eq_3xyy = a_eq_2xy*V;
+        double a_eq_3yyx = a_eq_2yy*U;
+        double a_eq_3yxy = a_eq_2yx*V;
+        double a_eq_3yyy = a_eq_2yy*V;
+        double a_eq_4xxxx = a_eq_3xxx*U;
+        double a_eq_4xxxy = a_eq_3xxx*V;
+        double a_eq_4xxyx = a_eq_3xxy*U;
+        double a_eq_4xyxx = a_eq_3xyx*U;
+        double a_eq_4yxxx = a_eq_3yxx*U;
         
-        a_eq_4yyxx = a_eq_3yyx*U;
-        a_eq_4xyyx = a_eq_3xyy*U;
-        a_eq_4xxyy = a_eq_3xxy*V;
-        a_eq_4yxyx = a_eq_3yxy*U;
-        a_eq_4xyxy = a_eq_3xyx*V;
+        double a_eq_4yyxx = a_eq_3yyx*U;
+        double a_eq_4xyyx = a_eq_3xyy*U;
+        double a_eq_4xxyy = a_eq_3xxy*V;
+        double a_eq_4yxyx = a_eq_3yxy*U;
+        double a_eq_4xyxy = a_eq_3xyx*V;
         
-        a_eq_4xyyy = a_eq_3xyy*V;
-        a_eq_4yxyy = a_eq_3yxy*V;
-        a_eq_4yyxy = a_eq_3yyx*V;
-        a_eq_4yyyx = a_eq_3yyy*U;
+        double a_eq_4xyyy = a_eq_3xyy*V;
+        double a_eq_4yxyy = a_eq_3yxy*V;
+        double a_eq_4yyxy = a_eq_3yyx*V;
+        double a_eq_4yyyx = a_eq_3yyy*U;
         
-        a_eq_4yyyy = a_eq_3yyy*V;
+        double a_eq_4yyyy = a_eq_3yyy*V;
 
-        a_neq_0 = 0.;
-        a_neq_1x = a_eq_0*U;
-        a_neq_1y = a_eq_0*V;
+        double a_neq_0 = 0.;
+        double a_neq_1x = a_eq_0*U;
+        double a_neq_1y = a_eq_0*V;
 
-        a_neq_2xx = a_neq_2xy = a_neq_2yx = a_neq_2yy = 0.;
-        a_neq_3xxx = a_neq_3yxx = a_neq_3xyx = a_neq_3xxy = a_neq_3xyy = a_neq_3yyx = a_neq_3yxy = a_neq_3yyy = 0.;
-        for(int k=0; k<lattice.np; k++)
-        {
-            const double cu = U*lattice.cx[l] + V*lattice.cy[l];
-            const double feq = lattice.wf[l] * R * (1.0 + 3.0*cu + 4.5*cu*cu - 1.5*(U*U+V*V));
-            const double fneq = f1(x,y,l)-feq;
-            a_neq_2xx += (lattice.cx[k]*lattice.cx[k]-lattice.cs2)*fneq;
-            a_neq_2xy += lattice.cx[k]*lattice.cy[k]*fneq;
-            a_neq_2yx += lattice.cy[k]*lattice.cx[k]*fneq;
-            a_neq_2yy += (lattice.cy[k]*lattice.cy[k]-lattice.cs2)*fneq;
-
-            a_neq_3xxx += H3(x,x,x)*fneq;
-            a_neq_3yxx += H3(y,x,x)*fneq;
-            a_neq_3xyx += H3(x,y,x)*fneq;
-            a_neq_3xxy += H3(x,x,y)*fneq;
-            a_neq_3xyy += H3(x,y,y)*fneq;
-            a_neq_3yyx += H3(y,y,x)*fneq;
-            a_neq_3yxy += H3(y,x,y)*fneq;
-            a_neq_3yyy += H3(y,y,y)*fneq;
-
-            a_neq_4xxxx = H4(x,x,x,x)*fneq;
+        double a_neq_2xx = 0.;
+        double a_neq_2xy =  0.;
+        double a_neq_2yx =  0.;
+        double a_neq_2yy = 0.;
+        double a_neq_3xxx =  0.;
+        double a_neq_3yxx = 0.; 
+        double a_neq_3xyx =  0.;
+        double a_neq_3xxy = 0.; 
+        double a_neq_3xyy = 0.; 
+        double a_neq_3yyx = 0.; 
+        double a_neq_3yxy = 0.; 
+        double a_neq_3yyy = 0.;
+                    a_neq_4xxxx = H4(x,x,x,x)*fneq;
             a_neq_4xxxy = H4(x,x,x,y)*fneq;
             a_neq_4xxyx = H4(x,x,y,x)*fneq;
             a_neq_4xyxx = H4(x,y,x,x)*fneq;
@@ -344,6 +338,43 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
             a_neq_4yyyx = H4(y,y,y,x)*fneq;
             
             a_neq_4yyyy = H4(y,y,y,y)*fneq;
+        for(int k=0; k<lattice.np; k++)
+        {
+            const double cu = U*lattice.cx[k] + V*lattice.cy[k];
+            const double feq = lattice.wf[k] * R * (1.0 + 3.0*cu + 4.5*cu*cu - 1.5*(U*U+V*V));
+            const double fneq = f1(x,y,k)-feq;
+            a_neq_2xx += (lattice.cx[k]*lattice.cx[k]-lattice.cs2)*fneq;
+            a_neq_2xy += lattice.cx[k]*lattice.cy[k]*fneq;
+            a_neq_2yx += lattice.cy[k]*lattice.cx[k]*fneq;
+            a_neq_2yy += (lattice.cy[k]*lattice.cy[k]-lattice.cs2)*fneq;
+
+            a_neq_3xxx += H3(x,x,x)*fneq;
+            a_neq_3yxx += H3(y,x,x)*fneq;
+            a_neq_3xyx += H3(x,y,x)*fneq;
+            a_neq_3xxy += H3(x,x,y)*fneq;
+            a_neq_3xyy += H3(x,y,y)*fneq;
+            a_neq_3yyx += H3(y,y,x)*fneq;
+            a_neq_3yxy += H3(y,x,y)*fneq;
+            a_neq_3yyy += H3(y,y,y)*fneq;
+
+            a_neq_4xxxx += H4(x,x,x,x)*fneq;
+            a_neq_4xxxy += H4(x,x,x,y)*fneq;
+            a_neq_4xxyx += H4(x,x,y,x)*fneq;
+            a_neq_4xyxx += H4(x,y,x,x)*fneq;
+            a_neq_4yxxx += H4(y,x,x,x)*fneq;
+            
+            a_neq_4yyxx += H4(y,y,x,x)*fneq;
+            a_neq_4xyyx += H4(x,y,y,x)*fneq;
+            a_neq_4xxyy += H4(x,x,y,y)*fneq;
+            a_neq_4yxyx += H4(y,x,y,x)*fneq;
+            a_neq_4xyxy += H4(x,y,x,y)*fneq;
+            
+            a_neq_4xyyy += H4(x,y,y,y)*fneq;
+            a_neq_4yxyy += H4(y,x,y,y)*fneq;
+            a_neq_4yyxy += H4(y,y,x,y)*fneq;
+            a_neq_4yyyx += H4(y,y,y,x)*fneq;
+            
+            a_neq_4yyyy += H4(y,y,y,y)*fneq;
         }
 
         for(int l=0;l<lattice.np;l++){
