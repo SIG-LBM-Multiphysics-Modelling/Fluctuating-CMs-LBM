@@ -2,7 +2,7 @@ reset
 set colorsequence default
 set terminal epslatex standalone color colortext size 9cm,6cm
 set out 'Test6.tex'
-#set yr[-0.05:2.5]
+set yr[-0.2:7]
 set xr[0.45:120]
 #set ytics 0.5
 set xtics ('0.5' 0.5, '1' 1, '5' 5, '10' 10, '50' 50, '100' 100) 
@@ -13,9 +13,9 @@ set logscale x
 set pointsize 2
 # Reference  
 g(x) = 0
-plot  "test6BGK.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'green' dt 1 lw 2 pt 12 title 'BGK',\
-     "test6MRT.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'blue' dt 1 lw 2 pt 14 title 'MRT',\
-     "test6.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'red' dt 1 lw 2 pt 16 title 'Present' 
+plot  "test6BGK.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'green' dt 1 lw 3 pt 12 title 'BGK',\
+     "test6MRT.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'blue' dt 1 lw 3 pt 14 title 'MRT',\
+     "test6.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'red' dt 1 lw 3 pt 16 title 'Present' 
 
 
 reset
