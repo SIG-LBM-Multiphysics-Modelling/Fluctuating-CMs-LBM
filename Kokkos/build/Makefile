@@ -156,6 +156,19 @@ D2Q9_RMS/fast:
 .PHONY : D2Q9_RMS/fast
 
 #=============================================================================
+# Target rules for targets named D2Q9_Reg
+
+# Build rule for target.
+D2Q9_Reg: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 D2Q9_Reg
+.PHONY : D2Q9_Reg
+
+# fast build rule for target.
+D2Q9_Reg/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/D2Q9_Reg.dir/build.make CMakeFiles/D2Q9_Reg.dir/build
+.PHONY : D2Q9_Reg/fast
+
+#=============================================================================
 # Target rules for targets named D3Q27_CMS
 
 # Build rule for target.
@@ -266,6 +279,30 @@ src/2D/D2Q9_RMS_Fluct_Tests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/D2Q9_RMS.dir/build.make CMakeFiles/D2Q9_RMS.dir/src/2D/D2Q9_RMS_Fluct_Tests.cpp.s
 .PHONY : src/2D/D2Q9_RMS_Fluct_Tests.cpp.s
 
+src/2D/D2Q9_Reg_Fluct_Tests.o: src/2D/D2Q9_Reg_Fluct_Tests.cpp.o
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.o
+
+# target to build an object file
+src/2D/D2Q9_Reg_Fluct_Tests.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/D2Q9_Reg.dir/build.make CMakeFiles/D2Q9_Reg.dir/src/2D/D2Q9_Reg_Fluct_Tests.cpp.o
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.cpp.o
+
+src/2D/D2Q9_Reg_Fluct_Tests.i: src/2D/D2Q9_Reg_Fluct_Tests.cpp.i
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.i
+
+# target to preprocess a source file
+src/2D/D2Q9_Reg_Fluct_Tests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/D2Q9_Reg.dir/build.make CMakeFiles/D2Q9_Reg.dir/src/2D/D2Q9_Reg_Fluct_Tests.cpp.i
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.cpp.i
+
+src/2D/D2Q9_Reg_Fluct_Tests.s: src/2D/D2Q9_Reg_Fluct_Tests.cpp.s
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.s
+
+# target to generate assembly for a file
+src/2D/D2Q9_Reg_Fluct_Tests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/D2Q9_Reg.dir/build.make CMakeFiles/D2Q9_Reg.dir/src/2D/D2Q9_Reg_Fluct_Tests.cpp.s
+.PHONY : src/2D/D2Q9_Reg_Fluct_Tests.cpp.s
+
 src/3D/Q27/D3Q27_BGK_Fluct_Tests.o: src/3D/Q27/D3Q27_BGK_Fluct_Tests.cpp.o
 .PHONY : src/3D/Q27/D3Q27_BGK_Fluct_Tests.o
 
@@ -349,6 +386,7 @@ help:
 	@echo "... D2Q9_BGK"
 	@echo "... D2Q9_CMS"
 	@echo "... D2Q9_RMS"
+	@echo "... D2Q9_Reg"
 	@echo "... D3Q27_BGK"
 	@echo "... D3Q27_CMS"
 	@echo "... D3Q27_RMS"
@@ -361,6 +399,9 @@ help:
 	@echo "... src/2D/D2Q9_RMS_Fluct_Tests.o"
 	@echo "... src/2D/D2Q9_RMS_Fluct_Tests.i"
 	@echo "... src/2D/D2Q9_RMS_Fluct_Tests.s"
+	@echo "... src/2D/D2Q9_Reg_Fluct_Tests.o"
+	@echo "... src/2D/D2Q9_Reg_Fluct_Tests.i"
+	@echo "... src/2D/D2Q9_Reg_Fluct_Tests.s"
 	@echo "... src/3D/Q27/D3Q27_BGK_Fluct_Tests.o"
 	@echo "... src/3D/Q27/D3Q27_BGK_Fluct_Tests.i"
 	@echo "... src/3D/Q27/D3Q27_BGK_Fluct_Tests.s"

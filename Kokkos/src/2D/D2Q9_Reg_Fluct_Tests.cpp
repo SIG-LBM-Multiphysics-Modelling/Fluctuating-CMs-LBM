@@ -21,7 +21,6 @@ const bool plot_vtk = true;
 typedef Kokkos::View<double*> View1DArray;
 typedef Kokkos::View<double**> View2DArray;
 typedef Kokkos::View<double***> View3DArray;
-typedef Kokkos::View<double****> View4DArray;
 
 struct D2Q9{
   // lattice velocities
@@ -29,6 +28,8 @@ struct D2Q9{
     static constexpr double cs2 = cs*cs;
     static constexpr double cs3 = cs2*cs;
     static constexpr double cs4 = cs3*cs;
+    static constexpr double cs6 = cs4*cs2;
+    static constexpr double cs8 = cs6*cs2;
     static constexpr int dim = 2;
     static constexpr int np = 9;
     const int cx[np];
@@ -159,9 +160,7 @@ static StatsSimple compute_stats_simple(View2DArray u, View2DArray v, const Para
 }
 
 void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1, View3DArray f2,
-                const D2Q9 lattice, const Params parameters, View2DArray M, View1DArray H1, 
-                View2DArray H2, View3DArray H3, View4DArray H4, View2DArray Id)
-                 {
+                const D2Q9 lattice, const Params parameters, View2DArray M) {
 
     // Kokkos lambda for initialization
     Kokkos::parallel_for("InitializeState",
@@ -200,40 +199,11 @@ void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1
       M(7,i) = (CY2-lattice.cs2)*CX;
       M(8,i) = (CX2-lattice.cs2)*(CY2-lattice.cs2);
     }
-    Id(0,0) = Id(1,1) = lattice.cs2;
-    Id(0,1) = Id(1,0) = 0.;
-    double hat_[2];
-    for(int k=0; k<lattice.np; k++)
-    {
-      hat_[0] = lattice.cx[k];
-      hat_[1] = lattice.cy[k];
-      for(int a=0; a<2; a++)
-      {
-        H1(a) = hat_[a]; 
-        for(int b=0; b<2; b++)
-        {
-          H2(a,b) = hat_[a]*hat_[b]-Id(a,b);
-          for(int c=0; c<2; c++)
-          {
-            H3(a,b,c) = hat_[a]*hat_[b]*hat_[c]-hat_[a]*Id(b,c)+hat_[a]*Id(a,c)+hat_[a]*Id(a,b);
-            for(int d=0; d<2; d++)
-            {
-              double hat_II = hat_[a]*hat_[b]*Id(c,d)+hat_[a]*hat_[c]*Id(b,d)+
-                              hat_[a]*hat_[d]*Id(b,c)+hat_[b]*hat_[c]*Id(a,d)+
-                              hat_[b]*hat_[d]*Id(a,c)+hat_[c]*hat_[d]*Id(a,b);
-              double II = Id(a,b)*Id(c,d)+Id(a,c)*Id(b,d)+Id(a,d)*Id(b,c);
-              H4(a,b,c,d) = hat_[a]*hat_[b]*hat_[c]*hat_[d]-hat_II+II;
-            }
-          }
-        }
-      }
-    }
     Kokkos::fence();
 }
 
 void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View2DArray v,
-            const D2Q9 lattice, const Params parameters, RNGPool rng_pool, View2DArray M, View1DArray H1, 
-                View2DArray H2, View3DArray H3, View4DArray H4, View2DArray Id)
+            const D2Q9 lattice, const Params parameters, RNGPool rng_pool, View2DArray M)
 {
 
     // Kokkos parallel loop for the lattice Boltzmann algorithm
@@ -252,7 +222,6 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         rho(x,y) = R;
         u(x,y) = U;
         v(x,y) = V;
-        
         double U2 = U*U;
         double V2 = V*V;
         double UV = U*V;
@@ -270,126 +239,109 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         double coeff = R*parameters.kBT*parameters.omega*(2.-parameters.omega)/lattice.cs2;
         double etas[9] = {0., 0., 0., eta3, eta4, eta5, eta6, eta7, eta8};
 
-        double a_eq_0 = R;
-        double a_eq_1x = a_eq_0*U;
-        double a_eq_1y = a_eq_0*V;
-        double a_eq_2xx = a_eq_1x*U;
-        double a_eq_2yy = a_eq_1y*V;
-       double  a_eq_2xy = a_eq_1x*V;
-        double a_eq_2yx = a_eq_1y*U;
-        double a_eq_3xxx = a_eq_2xx*U;
-        double a_eq_3yxx = a_eq_2yx*U;
-        double a_eq_3xyx = a_eq_2xy*U;
-        double a_eq_3xxy = a_eq_2xx*V;
-        double a_eq_3xyy = a_eq_2xy*V;
-        double a_eq_3yyx = a_eq_2yy*U;
-        double a_eq_3yxy = a_eq_2yx*V;
-        double a_eq_3yyy = a_eq_2yy*V;
-        double a_eq_4xxxx = a_eq_3xxx*U;
-        double a_eq_4xxxy = a_eq_3xxx*V;
-        double a_eq_4xxyx = a_eq_3xxy*U;
-        double a_eq_4xyxx = a_eq_3xyx*U;
-        double a_eq_4yxxx = a_eq_3yxx*U;
-        
-        double a_eq_4yyxx = a_eq_3yyx*U;
-        double a_eq_4xyyx = a_eq_3xyy*U;
-        double a_eq_4xxyy = a_eq_3xxy*V;
-        double a_eq_4yxyx = a_eq_3yxy*U;
-        double a_eq_4xyxy = a_eq_3xyx*V;
-        
-        double a_eq_4xyyy = a_eq_3xyy*V;
-        double a_eq_4yxyy = a_eq_3yxy*V;
-        double a_eq_4yyxy = a_eq_3yyx*V;
-        double a_eq_4yyyx = a_eq_3yyy*U;
-        
-        double a_eq_4yyyy = a_eq_3yyy*V;
-
-        double a_neq_0 = 0.;
-        double a_neq_1x = a_eq_0*U;
-        double a_neq_1y = a_eq_0*V;
-
-        double a_neq_2xx = 0.;
-        double a_neq_2xy =  0.;
-        double a_neq_2yx =  0.;
-        double a_neq_2yy = 0.;
-        double a_neq_3xxx =  0.;
-        double a_neq_3yxx = 0.; 
-        double a_neq_3xyx =  0.;
-        double a_neq_3xxy = 0.; 
-        double a_neq_3xyy = 0.; 
-        double a_neq_3yyx = 0.; 
-        double a_neq_3yxy = 0.; 
-        double a_neq_3yyy = 0.;
-                    a_neq_4xxxx = H4(x,x,x,x)*fneq;
-            a_neq_4xxxy = H4(x,x,x,y)*fneq;
-            a_neq_4xxyx = H4(x,x,y,x)*fneq;
-            a_neq_4xyxx = H4(x,y,x,x)*fneq;
-            a_neq_4yxxx = H4(y,x,x,x)*fneq;
-            
-            a_neq_4yyxx = H4(y,y,x,x)*fneq;
-            a_neq_4xyyx = H4(x,y,y,x)*fneq;
-            a_neq_4xxyy = H4(x,x,y,y)*fneq;
-            a_neq_4yxyx = H4(y,x,y,x)*fneq;
-            a_neq_4xyxy = H4(x,y,x,y)*fneq;
-            
-            a_neq_4xyyy = H4(x,y,y,y)*fneq;
-            a_neq_4yxyy = H4(y,x,y,y)*fneq;
-            a_neq_4yyxy = H4(y,y,x,y)*fneq;
-            a_neq_4yyyx = H4(y,y,y,x)*fneq;
-            
-            a_neq_4yyyy = H4(y,y,y,y)*fneq;
+        double axx_2 = 0., ayy_2 = 0., axy_2 = 0.;
         for(int k=0; k<lattice.np; k++)
         {
-            const double cu = U*lattice.cx[k] + V*lattice.cy[k];
-            const double feq = lattice.wf[k] * R * (1.0 + 3.0*cu + 4.5*cu*cu - 1.5*(U*U+V*V));
-            const double fneq = f1(x,y,k)-feq;
-            a_neq_2xx += (lattice.cx[k]*lattice.cx[k]-lattice.cs2)*fneq;
-            a_neq_2xy += lattice.cx[k]*lattice.cy[k]*fneq;
-            a_neq_2yx += lattice.cy[k]*lattice.cx[k]*fneq;
-            a_neq_2yy += (lattice.cy[k]*lattice.cy[k]-lattice.cs2)*fneq;
+            const double cxk = (double)lattice.cx[k];
+            const double cyk = (double)lattice.cy[k];
 
-            a_neq_3xxx += H3(x,x,x)*fneq;
-            a_neq_3yxx += H3(y,x,x)*fneq;
-            a_neq_3xyx += H3(x,y,x)*fneq;
-            a_neq_3xxy += H3(x,x,y)*fneq;
-            a_neq_3xyy += H3(x,y,y)*fneq;
-            a_neq_3yyx += H3(y,y,x)*fneq;
-            a_neq_3yxy += H3(y,x,y)*fneq;
-            a_neq_3yyy += H3(y,y,y)*fneq;
+            // Compact Hermite polynomials for D2 (raw, not normalized by cs)
+            // H2:
+            const double H2_xx = cxk*cxk - lattice.cs2;
+            const double H2_yy = cyk*cyk - lattice.cs2;
+            const double H2_xy = cxk*cyk;
+            const double cx2 = cxk*cxk, cy2 = cyk*cyk;
 
-            a_neq_4xxxx += H4(x,x,x,x)*fneq;
-            a_neq_4xxxy += H4(x,x,x,y)*fneq;
-            a_neq_4xxyx += H4(x,x,y,x)*fneq;
-            a_neq_4xyxx += H4(x,y,x,x)*fneq;
-            a_neq_4yxxx += H4(y,x,x,x)*fneq;
-            
-            a_neq_4yyxx += H4(y,y,x,x)*fneq;
-            a_neq_4xyyx += H4(x,y,y,x)*fneq;
-            a_neq_4xxyy += H4(x,x,y,y)*fneq;
-            a_neq_4yxyx += H4(y,x,y,x)*fneq;
-            a_neq_4xyxy += H4(x,y,x,y)*fneq;
-            
-            a_neq_4xyyy += H4(x,y,y,y)*fneq;
-            a_neq_4yxyy += H4(y,x,y,y)*fneq;
-            a_neq_4yyxy += H4(y,y,x,y)*fneq;
-            a_neq_4yyyx += H4(y,y,y,x)*fneq;
-            
-            a_neq_4yyyy += H4(y,y,y,y)*fneq;
+            const double first_order = 3.*(U*cxk+V*cyk);
+            const double second_order = 4.5*pow(U*cxk+V*cyk,2)-1.5*(U2+V2);
+            const double third_order = 1./(2.*lattice.cs6)*(H2_xx *cyk*U2*V+H2_yy*cxk*U*V2);
+            const double fourth_order = 1./(4.*lattice.cs8)*(H2_xx*H2_yy*U2*V2);
+            const double feq_k = lattice.wf[k]*R*(1.+first_order+second_order+third_order+fourth_order);
+
+            axx_2 += (f1(x, y, k)-feq_k)*H2_xx;
+            ayy_2 += (f1(x, y, k)-feq_k)*H2_yy;
+            axy_2 += (f1(x, y, k)-feq_k)*H2_xy;
+
+            f1(x, y, k) = feq_k;
         }
+          // --- Symmetry
+          const double ayx_2 = axy_2;
 
-        for(int l=0;l<lattice.np;l++){
-          const double cu = U*lattice.cx[l] + V*lattice.cy[l];
-          const double feq = lattice.wf[l] * R * (1.0 + 3.0*cu + 4.5*cu*cu - 1.5*(U*U+V*V));
-          f1(x,y,l) = feq + parameters.omega1*(f1(x,y,l)-feq);
-                
+          // --- RR: build nonequilibrium Hermite coefficients a3 and a4 (isothermal)
+          // a3 is fully symmetric, we store only the unique D2 components
+          const double axxx_3 = 3.0*U*axx_2;
+          const double axxy_3 = 2.0*U*axy_2 + V*axx_2;
+          const double axyy_3 = 2.0*V*axy_2 + U*ayy_2;
+          const double ayyy_3 = 3.0*V*ayy_2;
+
+      // equilibrium 2nd-order Hermite coefficient (athermal/isothermal):
+      // a2_0,αβ = ρ (uα uβ + cs2 δαβ)
+ 
+
+            const double axxxx_4 = 4.*U*axxx_3 - 6.*U2*axx_2;
+            const double axxxy_4 = 3.*U*axxy_3 + V*axxx_3 - 3.*U2*axy_2 - 3.*U*V*axx_2;
+            const double axyyy_4 = U*ayyy_3 + 3.*V*axyy_3 - 3.*U*V*ayy_2 - 3.*V2*axy_2;
+            const double ayyyy_4 = 4.*V*ayyy_3 - 6.*V2*ayy_2;
+            const double axxyy_4 = 2.*U*axyy_3 + 2.*V*axxy_3 - U2*ayy_2 - V2*axx_2 - 4.*U*V*axy_2;
+
+        // --- Now loop over directions: build fneq,reg up to 4 and collide+stream
+
+          for(int k=0; k<lattice.np; k++)
+          {
+
+            const double cxk = (double)lattice.cx[k];
+            const double cyk = (double)lattice.cy[k];
+
+            // Compact Hermite polynomials for D2 (raw, not normalized by cs)
+            // H2:
+            const double H2_xx = cxk*cxk - lattice.cs2;
+            const double H2_yy = cyk*cyk - lattice.cs2;
+            const double H2_xy = cxk*cyk;
+
+            // H3:
+            const double H3_xxx = cxk*cxk*cxk - 3.0*lattice.cs2*cxk;
+            const double H3_xxy = cxk*cxk*cyk - lattice.cs2*cyk;
+            const double H3_xyy = cxk*cyk*cyk - lattice.cs2*cxk;
+            const double H3_yyy = cyk*cyk*cyk - 3.0*lattice.cs2*cyk;
+
+            // H4:
+            const double cx2 = cxk*cxk, cy2 = cyk*cyk;
+            const double H4_xxxx = cx2*cx2 - 6.0*lattice.cs2*cx2 + 3.0*lattice.cs4;
+            const double H4_xxxy = cx2*cxk*cyk - 3.0*lattice.cs2*cxk*cyk;
+            const double H4_xxyy = cx2*cy2 - lattice.cs2*(cx2 + cy2) + lattice.cs4;
+            const double H4_xyyy = cy2*cyk*cxk - 3.0*lattice.cs2*cxk*cyk;
+            const double H4_yyyy = cy2*cy2 - 6.0*lattice.cs2*cy2 + 3.0*lattice.cs4;
+
+            // Contractions a2:H2, a3:H3, a4:H4 with symmetry factors
+            // a2 contraction: a_xx H_xx + a_yy H_yy + 2 a_xy H_xy
+            const double c2 = axx_2*H2_xx + ayy_2*H2_yy + 2.0*axy_2*H2_xy;
+
+            // a3 contraction: a_xxx H_xxx + 3 a_xxy H_xxy + 3 a_xyy H_xyy + a_yyy H_yyy
+            const double c3 = axxx_3*H3_xxx + 3.0*axxy_3*H3_xxy + 3.0*axyy_3*H3_xyy + ayyy_3*H3_yyy;
+
+            // a4 contraction: a_xxxx H_xxxx + 4 a_xxxy H_xxxy + 6 a_xxyy H_xxyy + 4 a_xyyy H_xyyy + a_yyyy H_yyyy
+            const double c4 = axxxx_4*H4_xxxx + 4.0*axxxy_4*H4_xxxy + 6.0*axxyy_4*H4_xxyy
+                            + 4.0*axyyy_4*H4_xyyy + ayyyy_4*H4_yyyy;
+
+            // Regularized nonequilibrium up to order 4:
+            const double fneq_reg = lattice.wf[k] * ( (c2)/(2.0*lattice.cs4) + (c3)/(6.0*lattice.cs6) + (c4)/(24.0*lattice.cs8) );
+
+            // Regularized BGK collision:
+            // f_post = feq + (1 - 1/tau)*fneq_reg = feq + omega1*fneq_reg
+            f1(x, y, k) = f1(x, y, k) + parameters.omega1 * fneq_reg;
+
           double fluctuating_term = 0.;
-          for(int k=4; k<lattice.np; k++)
-            fluctuating_term += 1./lattice.b[k]*M(k,l)*etas[k]*sqrt(coeff*lattice.b[k]);
-
-          f1(x,y,z,l) += lattice.wf[l]*fluctuating_term;
-          const int newx = (x + lattice.cx[l] + parameters.nx) % parameters.nx;
-          const int newy = (y + lattice.cy[l] + parameters.ny) % parameters.ny;
-          f2(newx,newy,l) = f1(x,y,l);
+          for(int h=3;h<lattice.np;h++)
+            fluctuating_term += 1./lattice.b[h]*M(h,k)*etas[h]*sqrt(coeff*lattice.b[h]);
+          f1(x,y,k) += lattice.wf[k]*fluctuating_term;
+          int newx, newy;
+          newx = x+lattice.cx[k];
+          newy = y+lattice.cy[k];
+          if(x==0 || x==parameters.nx-1)
+            newx = (x+lattice.cx[k] + parameters.nx) % parameters.nx;
+          if(y==0 || y==parameters.ny-1)
+            newy = (y+lattice.cy[k] + parameters.ny) % parameters.ny;
+          f2(newx,newy,k) = f1(x,y,k);
         }
     });
     Kokkos::fence(); 
@@ -399,6 +351,7 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
 static void run_single(const std::string& label, Params p)
 {
     p.finalize();
+    const D2Q9 lattice;
 
     std::cout << "\n=== " << label << " ===\n";
     std::cout << "nx="<<p.nx<<" ny="<<p.ny
@@ -408,28 +361,21 @@ static void run_single(const std::string& label, Params p)
               << " nsteps="<<p.nsteps
               << "\n";
 
-    const D2Q9 lattice;
     View3DArray f1("f1", p.nx,p.ny,lattice.np);
     View3DArray f2("f2", p.nx,p.ny,lattice.np);
-    View1DArray rho("rho", p.nx,p.ny);
-    View1DArray u("u", p.nx,p.ny);
-    View1DArray v("v", p.nx,p.ny);
-    View2DArray M("M", 9, 9);
-
-    View2DArray Id("Id", 2, 2);
-    View1DArray H1("H1", 2);
-    View2DArray H2("H2", 2, 2);
-    View3DArray H3("H3", 2, 2, 2);
-    View4DArray H4("H4", 2, 2, 2, 2);
+    View2DArray rho("rho", p.nx,p.ny);
+    View2DArray u("u", p.nx,p.ny);
+    View2DArray v("v", p.nx,p.ny);
+    View2DArray M("M", lattice.np, lattice.np);
 
     RNGPool rng_pool(123456789ULL);
 
-    initial_state(rho,u,v,f1,f2,lattice,p, M, H1, H2, H3, H4, Id);
+    initial_state(rho,u,v,f1,f2,lattice,p, M);
 
     const double target = (p.rho0>0.0) ? (p.kBT/p.rho0) : 0.0;
 
     for(int it=0; it<=p.nsteps; ++it){
-        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M, H1, H2, H3, H4, Id);
+        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
         std::swap(f1,f2);
 
         if(it % p.n_out == 0){
@@ -470,34 +416,28 @@ static void case3_kbt_scaling(){
         const D2Q9 lattice;
         View3DArray f1("f1", p.nx,p.ny,lattice.np);
         View3DArray f2("f2", p.nx,p.ny,lattice.np);
-        View1DArray rho("rho", p.nx,p.ny);
-        View1DArray u("u", p.nx,p.ny);
-        View1DArray v("v", p.nx,p.ny);
-        View2DArray M("M", 9, 9);
+        View2DArray rho("rho", p.nx,p.ny);
+        View2DArray u("u", p.nx,p.ny);
+        View2DArray v("v", p.nx,p.ny);
+        View2DArray M("M", lattice.np, lattice.np);
   
-        View2DArray Id("Id", 2, 2);
-        View1DArray H1("H1", 2);
-        View2DArray H2("H2", 2, 2);
-        View3DArray H3("H3", 2, 2, 2);
-        View4DArray H4("H4", 2, 2, 2, 2);
-
         RNGPool rng_pool(123456789ULL);
 
-        initial_state(rho,u,v,f1,f2,lattice,p,M, H1, H2, H3, H4, Id);
+        initial_state(rho,u,v,f1,f2,lattice,p,M);
 
         // warmup shorter to keep it fast
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
         for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M, H1, H2, H3, H4, Id);
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
         auto s = compute_stats_simple(u,v,p);
         const double N = double(p.nx)*p.ny;
         const double u2 = s.u2, v2 = s.v2;
-        const double mean = (u2+v2)/3.0;
+        const double mean = (u2+v2)/2.0;
 
         std::cout << std::setprecision(10)
           << "kBT="<<kbt
@@ -520,33 +460,27 @@ static void case4_rho_scaling(){
         const D2Q9 lattice;
         View3DArray f1("f1", p.nx,p.ny,lattice.np);
         View3DArray f2("f2", p.nx,p.ny,lattice.np);
-        View1DArray rho("rho", p.nx,p.ny);
-        View1DArray u("u", p.nx,p.ny);
-        View1DArray v("v", p.nx,p.ny);
-        View2DArray M("M", 9, 9);
-
-        VView2DArray Id("Id", 2, 2);
-        View1DArray H1("H1", 2);
-        View2DArray H2("H2", 2, 2);
-        View3DArray H3("H3", 2, 2, 2);
-        View4DArray H4("H4", 2, 2, 2, 2);
+        View2DArray rho("rho", p.nx,p.ny);
+        View2DArray u("u", p.nx,p.ny);
+        View2DArray v("v", p.nx,p.ny);
+        View2DArray M("M", lattice.np, lattice.np);
 
         RNGPool rng_pool(123456789ULL);
 
-        initial_state(rho,u,v,f1,f2,lattice,p,M, H1, H2, H3, H4, Id);
+        initial_state(rho,u,v,f1,f2,lattice,p,M);
 
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
         for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,attice,p,rng_pool, M, H1, H2, H3, H4, Id);
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
             std::swap(f1,f2);
         }
 
         auto s = compute_stats_simple(u,v,p);
         const double N = double(p.nx)*p.ny;
         const double u2 = s.u2, v2 = s.v2;
-        const double mean = (u2+v2)/3.0;
+        const double mean = (u2+v2)/2.0;
 
         std::cout << std::setprecision(10)
           << "rho0="<<rho0
@@ -587,39 +521,32 @@ static void case5_tau_sweep(){
         const D2Q9 lattice;
         View3DArray f1("f1", p.nx,p.ny,lattice.np);
         View3DArray f2("f2", p.nx,p.ny,lattice.np);
-        View1DArray rho("rho", p.nx,p.ny);
-        View1DArray u("u", p.nx,p.ny);
-        View1DArray v("v", p.nx,p.ny);
-        View2DArray M("M", 9, 9);
-
-        View2DArray Id("Id", 2, 2);
-        View1DArray H1("H1", 2);
-        View2DArray H2("H2", 2, 2);
-        View3DArray H3("H3", 2, 2, 2);
-        View4DArray H4("H4", 2, 2, 2, 2);
+        View2DArray rho("rho", p.nx,p.ny);
+        View2DArray u("u", p.nx,p.ny);
+        View2DArray v("v", p.nx,p.ny);
+        View2DArray M("M", lattice.np, lattice.np);
 
         RNGPool rng_pool(123456789ULL);
 
-        initial_state(rho,u,v,f1,f2,lattice,p, M, H1, H2, H3, H4, Id);
+        initial_state(rho,u,v,f1,f2,lattice,p, M);
 
         // same warmup/run idea as your scaling cases
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
         for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M, H1, H2, H3, H4, Id);
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
             std::swap(f1,f2);
         }
 
         // report the same stats you already trust
         auto s = compute_stats_simple(u,v,p);
-        const double mean_u2 = (s.u2 + s.v2)/3.0;
+        const double mean_u2 = (s.u2 + s.v2)/2.0;
 
         std::cout << std::setprecision(10)
                   << "tau=" << p.tau
                   << "  <u^2>=" << s.u2
                   << " <v^2>=" << s.v2
-                  << " <w^2>=" << s.w2
                   << "  mean=" << mean_u2
                   << "  target(kBT/rho0)=" << (p.kBT/p.rho0)
                   << "\n";

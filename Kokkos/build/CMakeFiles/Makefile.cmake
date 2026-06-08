@@ -65,6 +65,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/D2Q9_CMS.dir/DependInfo.cmake"
   "CMakeFiles/D2Q9_BGK.dir/DependInfo.cmake"
   "CMakeFiles/D2Q9_RMS.dir/DependInfo.cmake"
+  "CMakeFiles/D2Q9_Reg.dir/DependInfo.cmake"
   "CMakeFiles/D3Q27_CMS.dir/DependInfo.cmake"
   "CMakeFiles/D3Q27_BGK.dir/DependInfo.cmake"
   "CMakeFiles/D3Q27_RMS.dir/DependInfo.cmake"
