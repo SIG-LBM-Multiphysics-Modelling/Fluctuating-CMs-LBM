@@ -69,7 +69,7 @@ struct Params{
                 omega = 1.0/tau;
                 omega1 = 1.0 - omega;
                 T_ref = double(ny)/U_ref;
-                nsteps = (int)(10.*T_ref);
+                nsteps = (int)(100.*T_ref);
                 n_out  = (int)(1.*T_ref);
                 if(n_out < 1) n_out = 1;
             }
@@ -165,7 +165,7 @@ void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1
     // Kokkos lambda for initialization
     Kokkos::parallel_for("InitializeState",
     Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {parameters.nx, parameters.ny}),
-	KOKKOS_LAMBDA(const int x, const int y) {
+    KOKKOS_LAMBDA(const int x, const int y) {
 
         double R = parameters.rho0;
         double U = 0.;
@@ -181,7 +181,7 @@ void initial_state(View2DArray rho, View2DArray u, View2DArray v, View3DArray f1
             first_order = U*lattice.cx[k] + V*lattice.cy[k];
             f1(x,y,k) = f2(x,y,k) = lattice.wf[k] * R  * (1. + 3.*first_order + 4.5*pow(first_order,2) -1.5*(U*U+V*V));
         }
-	}
+    }
     );
     for(int i=0; i<lattice.np; i++)
     {
@@ -222,6 +222,7 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         rho(x,y) = R;
         u(x,y) = U;
         v(x,y) = V;
+        
         double U2 = U*U;
         double V2 = V*V;
         double UV = U*V;
@@ -238,7 +239,7 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
 
         double coeff = R*parameters.kBT*parameters.omega*(2.-parameters.omega)/lattice.cs2;
         double etas[9] = {0., 0., 0., eta3, eta4, eta5, eta6, eta7, eta8};
-
+        
         double axx_2 = 0., ayy_2 = 0., axy_2 = 0.;
         for(int k=0; k<lattice.np; k++)
         {
@@ -265,30 +266,26 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
             f1(x, y, k) = feq_k;
         }
           // --- Symmetry
-          const double ayx_2 = axy_2;
+        const double ayx_2 = axy_2;
 
           // --- RR: build nonequilibrium Hermite coefficients a3 and a4 (isothermal)
           // a3 is fully symmetric, we store only the unique D2 components
-          const double axxx_3 = 3.0*U*axx_2;
-          const double axxy_3 = 2.0*U*axy_2 + V*axx_2;
-          const double axyy_3 = 2.0*V*axy_2 + U*ayy_2;
-          const double ayyy_3 = 3.0*V*ayy_2;
+        const double axxx_3 = 3.0*U*axx_2;
+        const double axxy_3 = 2.0*U*axy_2 + V*axx_2;
+        const double axyy_3 = 2.0*V*axy_2 + U*ayy_2;
+        const double ayyy_3 = 3.0*V*ayy_2;
 
       // equilibrium 2nd-order Hermite coefficient (athermal/isothermal):
       // a2_0,αβ = ρ (uα uβ + cs2 δαβ)
- 
-
-            const double axxxx_4 = 4.*U*axxx_3 - 6.*U2*axx_2;
-            const double axxxy_4 = 3.*U*axxy_3 + V*axxx_3 - 3.*U2*axy_2 - 3.*U*V*axx_2;
-            const double axyyy_4 = U*ayyy_3 + 3.*V*axyy_3 - 3.*U*V*ayy_2 - 3.*V2*axy_2;
-            const double ayyyy_4 = 4.*V*ayyy_3 - 6.*V2*ayy_2;
-            const double axxyy_4 = 2.*U*axyy_3 + 2.*V*axxy_3 - U2*ayy_2 - V2*axx_2 - 4.*U*V*axy_2;
+        const double axxxx_4 = 4.*U*axxx_3 - 6.*U2*axx_2;
+        const double axxxy_4 = 3.*U*axxy_3 + V*axxx_3 - 3.*U2*axy_2 - 3.*U*V*axx_2;
+        const double axyyy_4 = U*ayyy_3 + 3.*V*axyy_3 - 3.*U*V*ayy_2 - 3.*V2*axy_2;
+        const double ayyyy_4 = 4.*V*ayyy_3 - 6.*V2*ayy_2;
+        const double axxyy_4 = 2.*U*axyy_3 + 2.*V*axxy_3 - U2*ayy_2 - V2*axx_2 - 4.*U*V*axy_2;
 
         // --- Now loop over directions: build fneq,reg up to 4 and collide+stream
-
-          for(int k=0; k<lattice.np; k++)
-          {
-
+        for(int k=0; k<lattice.np; k++)
+        {
             const double cxk = (double)lattice.cx[k];
             const double cyk = (double)lattice.cy[k];
 
@@ -329,19 +326,18 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
             // Regularized BGK collision:
             // f_post = feq + (1 - 1/tau)*fneq_reg = feq + omega1*fneq_reg
             f1(x, y, k) = f1(x, y, k) + parameters.omega1 * fneq_reg;
-
-          double fluctuating_term = 0.;
-          for(int h=3;h<lattice.np;h++)
-            fluctuating_term += 1./lattice.b[h]*M(h,k)*etas[h]*sqrt(coeff*lattice.b[h]);
-          f1(x,y,k) += lattice.wf[k]*fluctuating_term;
-          int newx, newy;
-          newx = x+lattice.cx[k];
-          newy = y+lattice.cy[k];
-          if(x==0 || x==parameters.nx-1)
-            newx = (x+lattice.cx[k] + parameters.nx) % parameters.nx;
-          if(y==0 || y==parameters.ny-1)
-            newy = (y+lattice.cy[k] + parameters.ny) % parameters.ny;
-          f2(newx,newy,k) = f1(x,y,k);
+            double fluctuating_term = 0.;
+            for(int h=3;h<lattice.np;h++)
+                fluctuating_term += 1./lattice.b[h]*M(h,k)*etas[h]*sqrt(coeff*lattice.b[h]);
+            f1(x,y,k) += lattice.wf[k]*fluctuating_term;
+            int newx, newy;
+            newx = x+lattice.cx[k];
+            newy = y+lattice.cy[k];
+            if(x==0 || x==parameters.nx-1)
+              newx = (x+lattice.cx[k] + parameters.nx) % parameters.nx;
+            if(y==0 || y==parameters.ny-1)
+              newy = (y+lattice.cy[k] + parameters.ny) % parameters.ny;
+            f2(newx,newy,k) = f1(x,y,k);
         }
     });
     Kokkos::fence(); 
@@ -370,12 +366,12 @@ static void run_single(const std::string& label, Params p)
 
     RNGPool rng_pool(123456789ULL);
 
-    initial_state(rho,u,v,f1,f2,lattice,p, M);
+    initial_state(rho,u,v,f1,f2,lattice,p,M);
 
     const double target = (p.rho0>0.0) ? (p.kBT/p.rho0) : 0.0;
 
     for(int it=0; it<=p.nsteps; ++it){
-        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
+        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
         std::swap(f1,f2);
 
         if(it % p.n_out == 0){
@@ -473,7 +469,7 @@ static void case4_rho_scaling(){
         const int nrun   = int(100.0*p.T_ref);
 
         for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
@@ -528,14 +524,14 @@ static void case5_tau_sweep(){
 
         RNGPool rng_pool(123456789ULL);
 
-        initial_state(rho,u,v,f1,f2,lattice,p, M);
+        initial_state(rho,u,v,f1,f2,lattice,p,M);
 
         // same warmup/run idea as your scaling cases
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
         for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
