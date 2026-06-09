@@ -315,12 +315,60 @@ static void case1_zero_noise(){
 static void case2_equipartition(){
     Params p;
     p.kBT = 1.0/3000.0;
-    run_single("CASE 2: equipartition (kBT=1/3000)", p);
+    p.finalize();
+
+    std::cout << "\n=== CASE 2: equipartition (kBT=1/3000) ===\n";
+
+    const D2Q9 lattice;
+    View3DArray f1("f1", p.nx,p.ny,lattice.np);
+    View3DArray f2("f2", p.nx,p.ny,lattice.np);
+    View2DArray rho("rho", p.nx,p.ny);
+    View2DArray u("u", p.nx,p.ny);
+    View2DArray v("v", p.nx,p.ny);
+    View2DArray M("M", lattice.np, lattice.np);
+
+    RNGPool rng_pool(123456789ULL);
+    initial_state(rho,u,v,f1,f2,lattice,p,M);
+
+    const int warmup = int(20.0*p.T_ref);
+    const int nrun   = int(100.0*p.T_ref);
+
+    double sum_u2 = 0.0;
+    double sum_v2 = 0.0;
+    long long nsamples = 0;
+
+    for(int it=0; it<warmup; ++it){
+        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+        std::swap(f1,f2);
+    }
+
+    for(int it=0; it<nrun; ++it){
+        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+        std::swap(f1,f2);
+
+        auto s = compute_stats_simple(u,v,p);
+        sum_u2 += s.u2;
+        sum_v2 += s.v2;
+        nsamples++;
+    }
+
+    const double avg_u2 = sum_u2 / double(nsamples);
+    const double avg_v2 = sum_v2 / double(nsamples);
+    const double mean_t = 0.5*(avg_u2 + avg_v2);
+
+    std::cout << std::setprecision(10)
+              << "samples=" << nsamples
+              << "  <u^2>_t=" << avg_u2
+              << " <v^2>_t=" << avg_v2
+              << "  mean_t=" << mean_t
+              << "  target(kBT/rho0)=" << (p.kBT/p.rho0)
+              << "\n";
 }
 
 static void case3_kbt_scaling(){
     std::cout << "\n=== CASE 3: kBT scaling (expect <u^2> ~ kBT/rho) ===\n";
     std::vector<double> kbts = {1.0/6000.0, 1.0/3000.0, 1.0/1500.0, 1.0/750.0};
+
     for(double kbt : kbts){
         Params p;
         p.kBT = kbt;
@@ -333,37 +381,51 @@ static void case3_kbt_scaling(){
         View2DArray u("u", p.nx,p.ny);
         View2DArray v("v", p.nx,p.ny);
         View2DArray M("M", lattice.np, lattice.np);
-  
-        RNGPool rng_pool(123456789ULL);
 
+        RNGPool rng_pool(123456789ULL);
         initial_state(rho,u,v,f1,f2,lattice,p,M);
 
-        // warmup shorter to keep it fast
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
-        for(int it=0; it<warmup+nrun; ++it){
+        double sum_u2 = 0.0;
+        double sum_v2 = 0.0;
+        long long nsamples = 0;
+
+        for(int it=0; it<warmup; ++it){
             algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
-        auto s = compute_stats_simple(u,v,p);
-        const double N = double(p.nx)*p.ny;
-        const double u2 = s.u2, v2 = s.v2;
-        const double mean = (u2+v2)/2.0;
+        for(int it=0; it<nrun; ++it){
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+            std::swap(f1,f2);
+
+            auto s = compute_stats_simple(u,v,p);
+            sum_u2 += s.u2;
+            sum_v2 += s.v2;
+            nsamples++;
+        }
+
+        const double avg_u2 = sum_u2 / double(nsamples);
+        const double avg_v2 = sum_v2 / double(nsamples);
+        const double mean_t = 0.5*(avg_u2 + avg_v2);
 
         std::cout << std::setprecision(10)
-          << "kBT="<<kbt
-          << "  <u^2>="<<u2<<" <v^2>="<<v2
-          << "  mean="<<mean
-          << "  target="<<(kbt/p.rho0)
-          << "\n";
+                  << "kBT=" << kbt
+                  << "  samples=" << nsamples
+                  << "  <u^2>_t=" << avg_u2
+                  << " <v^2>_t=" << avg_v2
+                  << "  mean_t=" << mean_t
+                  << "  target=" << (kbt/p.rho0)
+                  << "\n";
     }
 }
 
 static void case4_rho_scaling(){
     std::cout << "\n=== CASE 4: rho scaling (expect <u^2> ~ kBT/rho0) ===\n";
     std::vector<double> rhos = {0.5, 1.0, 2.0, 4.0};
+
     for(double rho0 : rhos){
         Params p;
         p.rho0 = rho0;
@@ -379,51 +441,57 @@ static void case4_rho_scaling(){
         View2DArray M("M", lattice.np, lattice.np);
 
         RNGPool rng_pool(123456789ULL);
-
         initial_state(rho,u,v,f1,f2,lattice,p,M);
 
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
-        for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
+        double sum_u2 = 0.0;
+        double sum_v2 = 0.0;
+        long long nsamples = 0;
+
+        for(int it=0; it<warmup; ++it){
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
-        auto s = compute_stats_simple(u,v,p);
-        const double N = double(p.nx)*p.ny;
-        const double u2 = s.u2, v2 = s.v2;
-        const double mean = (u2+v2)/2.0;
+        for(int it=0; it<nrun; ++it){
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+            std::swap(f1,f2);
+
+            auto s = compute_stats_simple(u,v,p);
+            sum_u2 += s.u2;
+            sum_v2 += s.v2;
+            nsamples++;
+        }
+
+        const double avg_u2 = sum_u2 / double(nsamples);
+        const double avg_v2 = sum_v2 / double(nsamples);
+        const double mean_t = 0.5*(avg_u2 + avg_v2);
 
         std::cout << std::setprecision(10)
-          << "rho0="<<rho0
-          << "  <u^2>="<<u2<<" <v^2>="<<v2
-          << "  mean="<<mean
-          << "  target="<<(p.kBT/rho0)
-          << "\n";
+                  << "rho0=" << rho0
+                  << "  samples=" << nsamples
+                  << "  <u^2>_t=" << avg_u2
+                  << " <v^2>_t=" << avg_v2
+                  << "  mean_t=" << mean_t
+                  << "  target=" << (p.kBT/rho0)
+                  << "\n";
     }
 }
 
 static void case5_tau_sweep(){
     std::cout << "\n=== CASE 5: tau sweep via ni (equipartition at fixed kBT) ===\n";
 
-    // tau values from your table
     double taus[15] = {0.5, 0.5001, 0.5005, 0.501, 0.505, 0.51, 0.55, 0.7, 1.0, 1.5, 2.0, 5.0, 10.0, 50.0, 100.0};
-
-    // keep the same kBT used in your other tests
     const double kBT = 1.0/3000.0;
 
     for(double tau_target : taus){
         Params p;
         p.kBT = kBT;
-
-        // set ni so that tau = 3*ni + 0.5 matches tau_target
         p.ni  = (tau_target - 0.5)/3.0;
-
-        // finalize recomputes tau, omega, etc.
         p.finalize();
 
-        // (optional) sanity check print
         std::cout << std::setprecision(10)
                   << "\n-- target tau=" << tau_target
                   << "  set ni=" << p.ni
@@ -440,27 +508,40 @@ static void case5_tau_sweep(){
         View2DArray M("M", lattice.np, lattice.np);
 
         RNGPool rng_pool(123456789ULL);
+        initial_state(rho,u,v,f1,f2,lattice,p,M);
 
-        initial_state(rho,u,v,f1,f2,lattice,p, M);
-
-        // same warmup/run idea as your scaling cases
         const int warmup = int(20.0*p.T_ref);
         const int nrun   = int(100.0*p.T_ref);
 
-        for(int it=0; it<warmup+nrun; ++it){
-            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
+        double sum_u2 = 0.0;
+        double sum_v2 = 0.0;
+        long long nsamples = 0;
+
+        for(int it=0; it<warmup; ++it){
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
             std::swap(f1,f2);
         }
 
-        // report the same stats you already trust
-        auto s = compute_stats_simple(u,v,p);
-        const double mean_u2 = (s.u2 + s.v2)/2.0;
+        for(int it=0; it<nrun; ++it){
+            algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+            std::swap(f1,f2);
+
+            auto s = compute_stats_simple(u,v,p);
+            sum_u2 += s.u2;
+            sum_v2 += s.v2;
+            nsamples++;
+        }
+
+        const double avg_u2 = sum_u2 / double(nsamples);
+        const double avg_v2 = sum_v2 / double(nsamples);
+        const double mean_t = 0.5*(avg_u2 + avg_v2);
 
         std::cout << std::setprecision(10)
                   << "tau=" << p.tau
-                  << "  <u^2>=" << s.u2
-                  << " <v^2>=" << s.v2
-                  << "  mean=" << mean_u2
+                  << "  samples=" << nsamples
+                  << "  <u^2>_t=" << avg_u2
+                  << " <v^2>_t=" << avg_v2
+                  << "  mean_t=" << mean_t
                   << "  target(kBT/rho0)=" << (p.kBT/p.rho0)
                   << "\n";
     }
