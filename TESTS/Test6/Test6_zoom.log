@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  8 JUN 2026 08:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  10 JUN 2026 07:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**Test6_zoom.tex
+**Test6_zoom
 (./Test6_zoom.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2021-11-22>
@@ -161,31 +161,31 @@ e
 \gptboxwidth=\skip51
 \gptboxtext=\box52
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 163.
+(Font)              <10.95> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 163.
+(Font)              <8> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 163.
+(Font)              <6> on input line 166.
 Package epstopdf Info: Source file: <Test6_zoom-inc.eps>
-(epstopdf)                    date: 2026-06-08 08:15:41
-(epstopdf)                    size: 18321 bytes
+(epstopdf)                    date: 2026-06-10 07:49:49
+(epstopdf)                    size: 18450 bytes
 (epstopdf)             Output file: <Test6_zoom-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-08 08:12:13
-(epstopdf)                    size: 3725 bytes
+(epstopdf)                    date: 2026-06-08 08:15:51
+(epstopdf)                    size: 3726 bytes
 (epstopdf)             Command: <repstopdf --outfile=Test6_zoom-inc-eps-convert
 ed-to.pdf Test6_zoom-inc.eps>
-(epstopdf)             \includegraphics on input line 164.
+(epstopdf)             \includegraphics on input line 167.
 runsystem(repstopdf --outfile=Test6_zoom-inc-eps-converted-to.pdf Test6_zoom-in
 c.eps)...executed safely (allowed).
 
 Package epstopdf Info: Result file: <Test6_zoom-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-08 08:15:51
-(epstopdf)                    size: 3726 bytes.
+(epstopdf)                    date: 2026-06-10 07:49:59
+(epstopdf)                    size: 3753 bytes.
 <Test6_zoom-inc-eps-converted-to.pdf, id=1, 255.95625pt x 170.6375pt>
 File: Test6_zoom-inc-eps-converted-to.pdf Graphic file (type pdf)
 <use Test6_zoom-inc-eps-converted-to.pdf>
 Package pdftex.def Info: Test6_zoom-inc-eps-converted-to.pdf  used on input lin
-e 164.
+e 167.
 (pdftex.def)             Requested size: 256.07277pt x 170.64748pt.
 [1{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./Tes
 t6_zoom-inc-eps-converted-to.pdf>] (./Test6_zoom.aux) ) 
@@ -196,11 +196,11 @@ Here is how much of TeX's memory you used:
  20033 multiletter control sequences out of 15000+600000
  406169 words of font info for 36 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,6n,62p,205b,244s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,6n,62p,201b,244s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2021
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2021/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on Test6_zoom.pdf (1 page, 22436 bytes).
+Output written on Test6_zoom.pdf (1 page, 22459 bytes).
 PDF statistics:
  21 PDF objects out of 1000 (max. 8388607)
  12 compressed objects within 1 object stream
