@@ -69,7 +69,7 @@ struct Params{
                 omega = 1.0/tau;
                 omega1 = 1.0 - omega;
                 T_ref = double(ny)/U_ref;
-                nsteps = (int)(100.*T_ref);
+                nsteps = (int)(10.*T_ref);
                 n_out  = (int)(1.*T_ref);
                 if(n_out < 1) n_out = 1;
             }
@@ -366,12 +366,12 @@ static void run_single(const std::string& label, Params p)
 
     RNGPool rng_pool(123456789ULL);
 
-    initial_state(rho,u,v,f1,f2,lattice,p,M);
+    initial_state(rho,u,v,f1,f2,lattice,p, M);
 
     const double target = (p.rho0>0.0) ? (p.kBT/p.rho0) : 0.0;
 
     for(int it=0; it<=p.nsteps; ++it){
-        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool,M);
+        algoLB(f1,f2,rho,u,v,lattice,p,rng_pool, M);
         std::swap(f1,f2);
 
         if(it % p.n_out == 0){
