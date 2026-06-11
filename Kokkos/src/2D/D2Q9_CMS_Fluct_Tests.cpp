@@ -232,7 +232,7 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         double k4 = r4-R*(U2-V2);
         double k5 = r5-R*UV;
         
-        double k3 = 2.*R*lattice.cs2 + phi[3];
+        double k3 = phi[3];
         k4 = parameters.omega1*k4 + phi[4];
         k5 = parameters.omega1*k5 + phi[5];
         double k6 = phi[6];
