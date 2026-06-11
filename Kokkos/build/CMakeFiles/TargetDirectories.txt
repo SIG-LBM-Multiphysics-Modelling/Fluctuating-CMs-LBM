@@ -5,5 +5,6 @@
 /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D3Q27_CMS.dir
 /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D3Q27_BGK.dir
 /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/D3Q27_RMS.dir
+/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/TGV.dir
 /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/edit_cache.dir
 /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles/rebuild_cache.dir

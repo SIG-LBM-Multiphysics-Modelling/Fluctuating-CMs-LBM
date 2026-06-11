@@ -70,6 +70,7 @@ all: CMakeFiles/D2Q9_Reg.dir/all
 all: CMakeFiles/D3Q27_CMS.dir/all
 all: CMakeFiles/D3Q27_BGK.dir/all
 all: CMakeFiles/D3Q27_RMS.dir/all
+all: CMakeFiles/TGV.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -80,6 +81,7 @@ codegen: CMakeFiles/D2Q9_Reg.dir/codegen
 codegen: CMakeFiles/D3Q27_CMS.dir/codegen
 codegen: CMakeFiles/D3Q27_BGK.dir/codegen
 codegen: CMakeFiles/D3Q27_RMS.dir/codegen
+codegen: CMakeFiles/TGV.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -94,6 +96,7 @@ clean: CMakeFiles/D2Q9_Reg.dir/clean
 clean: CMakeFiles/D3Q27_CMS.dir/clean
 clean: CMakeFiles/D3Q27_BGK.dir/clean
 clean: CMakeFiles/D3Q27_RMS.dir/clean
+clean: CMakeFiles/TGV.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -319,6 +322,38 @@ CMakeFiles/D3Q27_RMS.dir/codegen:
 CMakeFiles/D3Q27_RMS.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/D3Q27_RMS.dir/build.make CMakeFiles/D3Q27_RMS.dir/clean
 .PHONY : CMakeFiles/D3Q27_RMS.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/TGV.dir
+
+# All Build rule for target.
+CMakeFiles/TGV.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TGV.dir/build.make CMakeFiles/TGV.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TGV.dir/build.make CMakeFiles/TGV.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles --progress-num=15,16 "Built target TGV"
+.PHONY : CMakeFiles/TGV.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/TGV.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/TGV.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles 0
+.PHONY : CMakeFiles/TGV.dir/rule
+
+# Convenience name for target.
+TGV: CMakeFiles/TGV.dir/rule
+.PHONY : TGV
+
+# codegen rule for target.
+CMakeFiles/TGV.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TGV.dir/build.make CMakeFiles/TGV.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alessandroderosis/Documents/GitHub/SIG/Fluctuating-CMs-LBM/Kokkos/build/CMakeFiles --progress-num=15,16 "Finished codegen for target TGV"
+.PHONY : CMakeFiles/TGV.dir/codegen
+
+# clean rule for target.
+CMakeFiles/TGV.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TGV.dir/build.make CMakeFiles/TGV.dir/clean
+.PHONY : CMakeFiles/TGV.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

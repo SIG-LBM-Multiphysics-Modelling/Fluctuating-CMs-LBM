@@ -3,7 +3,7 @@ clc
 %% Initialize some symbolic variables
 syms U V R omega f0 f1 f2 f3 f4 f5 f6 f7 f8 Fx Fy ....
                           eta0 eta1 eta2 eta3 eta4 eta5 eta6 eta7 eta8 kB t real
-central_moments = false;
+central_moments = true;
 noise = true;
 ortho = true;
 forcing = false;

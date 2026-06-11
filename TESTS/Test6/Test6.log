@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  10 JUN 2026 07:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  11 JUN 2026 05:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -161,30 +161,30 @@ e
 \gptboxwidth=\skip51
 \gptboxtext=\box52
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 169.
+(Font)              <10.95> on input line 168.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 169.
+(Font)              <8> on input line 168.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 169.
+(Font)              <6> on input line 168.
 Package epstopdf Info: Source file: <Test6-inc.eps>
-(epstopdf)                    date: 2026-06-10 07:49:49
-(epstopdf)                    size: 19296 bytes
+(epstopdf)                    date: 2026-06-11 05:11:36
+(epstopdf)                    size: 19227 bytes
 (epstopdf)             Output file: <Test6-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-08 08:15:42
-(epstopdf)                    size: 5049 bytes
+(epstopdf)                    date: 2026-06-10 12:08:45
+(epstopdf)                    size: 5031 bytes
 (epstopdf)             Command: <repstopdf --outfile=Test6-inc-eps-converted-to
 .pdf Test6-inc.eps>
-(epstopdf)             \includegraphics on input line 170.
+(epstopdf)             \includegraphics on input line 169.
 runsystem(repstopdf --outfile=Test6-inc-eps-converted-to.pdf Test6-inc.eps)...e
 xecuted safely (allowed).
 
 Package epstopdf Info: Result file: <Test6-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-10 07:49:55
-(epstopdf)                    size: 5054 bytes.
+(epstopdf)                    date: 2026-06-11 05:11:41
+(epstopdf)                    size: 4999 bytes.
 <Test6-inc-eps-converted-to.pdf, id=1, 255.95625pt x 170.6375pt>
 File: Test6-inc-eps-converted-to.pdf Graphic file (type pdf)
 <use Test6-inc-eps-converted-to.pdf>
-Package pdftex.def Info: Test6-inc-eps-converted-to.pdf  used on input line 170
+Package pdftex.def Info: Test6-inc-eps-converted-to.pdf  used on input line 169
 .
 (pdftex.def)             Requested size: 256.07277pt x 170.64748pt.
 [1{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./Tes
@@ -200,7 +200,7 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2021/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2021/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on Test6.pdf (1 page, 26492 bytes).
+Output written on Test6.pdf (1 page, 25442 bytes).
 PDF statistics:
  21 PDF objects out of 1000 (max. 8388607)
  12 compressed objects within 1 object stream

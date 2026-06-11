@@ -196,7 +196,6 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         double R = f1(x,y,0) + f1(x,y,1) + f1(x,y,2) + f1(x,y,3) + f1(x,y,4) + f1(x,y,5) + f1(x,y,6) + f1(x,y,7) + f1(x,y,8);
         double U = (f1(x,y,1) - f1(x,y,3) + f1(x,y,5) - f1(x,y,6) - f1(x,y,7) + f1(x,y,8))/R;
         double V = (f1(x,y,2) - f1(x,y,4) + f1(x,y,5) + f1(x,y,6) - f1(x,y,7) - f1(x,y,8))/R;
-        
         double Fx = 0.;
         double Fy = 0.;
         U += 0.5*Fx;
@@ -204,7 +203,6 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
         rho(x,y) = R;
         u(x,y) = U;
         v(x,y) = V;
-        
         double U2 = U*U;
         double V2 = V*V;
         double UV = U*V;
@@ -230,27 +228,25 @@ void algoLB(View3DArray f1, View3DArray f2, View2DArray rho, View2DArray u, View
 
         double r4 = f1(x,y,1)-f1(x,y,2)+f1(x,y,3)-f1(x,y,4);
         double r5 = f1(x,y,5)-f1(x,y,6)+f1(x,y,7)-f1(x,y,8);
-        
+          
         double k4 = r4-R*(U2-V2);
         double k5 = r5-R*UV;
         
-        double k1 = 0.5*Fx;
-        double k2 = 0.5*Fy;
-        double k3 = phi[3];
+        double k3 = 2.*R*lattice.cs2 + phi[3];
         k4 = parameters.omega1*k4 + phi[4];
         k5 = parameters.omega1*k5 + phi[5];
-        double k6 = 0.5*Fy*lattice.cs2 + phi[6];
-        double k7 = 0.5*Fx*lattice.cs2 + phi[7];
+        double k6 = phi[6];
+        double k7 = phi[7];
         double k8 = phi[8];
         
-        double r1 = k1+R*U;
-        double r2 = k2+R*V;
-        double r3 = k3+2.*U*k1+2.*V*k2+R*(U2+V2);
-        r4 = k4+2.*U*k1-2.*V*k2+R*(U2-V2);
-        r5 = k5+U*k2+V*k1+R*UV;
-        double r6 = k6+2.*U*k5+0.5*V*(k3+k4)+U2*k2+2.*UV*k1+R*U2*V;
-        double r7 = k7+0.5*U*(k3-k4)+2.*V*k5+V2*k1+2.*UV*k2+R*U*V2;
-        double r8 = k8+2.*U*k7+2.*V*k6+0.5*k3*(U2+V2)-0.5*k4*(U2-V2)+R*U2*V2+4.*UV*k5+2.*U*V2*k1+2.*U2*V*k2;
+        double r1 = R*U;
+        double r2 = R*V;
+        double r3 = k3+R*(U2+V2);
+        r4 = k4+R*(U2-V2);
+        r5 = k5+R*UV;
+        double r6 = k6+2.*U*k5+0.5*V*(k3+k4)+R*U2*V;
+        double r7 = k7+2.*V*k5+0.5*U*(k3-k4)+R*U*V2;
+        double r8 = k8+2.*U*k7+2.*V*k6+4.*UV*k5-0.5*k4*(U2-V2)+0.5*k3*(U2+V2)+R*U2*V2;
         
         f1(x,y,0) = 4.*R/9. - 2.*r3/3. + r8;
         f1(x,y,1) = r4/4. - (r7 + r8)/2. + r3/12. + R/9. + r1/3.;
