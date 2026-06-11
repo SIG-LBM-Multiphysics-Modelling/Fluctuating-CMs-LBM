@@ -45,16 +45,14 @@ set terminal epslatex standalone color colortext size 9cm,6cm
 set out 'Test6_zoom2.tex'
 #set yr[0:6]
 #set ytics 1
-set xr[0.495:0.705]
-set xtics 0.1
-set xtics ('0.5' 0.5, '0.55' 0.55, '0.7' 0.7) 
-set logscale x
-set key top Left left samplen 1 
-unset key
+set xr[0.4985:0.5515]
+set xtics ('0.5' 0.5, '0.51' 0.51, '0.52' 0.52, '0.53' 0.53, '0.54' 0.54, '0.55' 0.55) 
+#set logscale x
+set key top right Right samplen 1 
 set xlabel '$\tau$' offset 0,0.7
 set ylabel '$\psi$'  offset 0.5,0
 set pointsize 2
-plot  "test6BGK.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'green' dt 1 lw 3 pt 12 title 'BGK',\
-     "test6MRT.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'blue' dt 1 lw 3 pt 14 title 'MRT',\
-     "test6.txt" u 1:(abs($4-$5)/$5*100) w lp lc 'red' dt 1 lw 3 pt 16 title 'CMs' 
+plot  "test6BGK.txt" u 1:(abs($4-$5)/$5*100) w p lc 'green' dt 1 lw 3 pt 12 title 'BGK',\
+     "test6MRT.txt" u 1:(abs($4-$5)/$5*100) w p lc 'blue' dt 1 lw 3 pt 14 title 'MRT',\
+     "test6.txt" u 1:(abs($4-$5)/$5*100) w p lc 'red' dt 1 lw 3 pt 16 title 'CMs' 
 

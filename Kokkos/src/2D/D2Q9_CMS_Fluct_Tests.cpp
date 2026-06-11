@@ -495,7 +495,8 @@ static void case4_rho_scaling(){
 static void case5_tau_sweep(){
     std::cout << "\n=== CASE 5: tau sweep via ni (equipartition at fixed kBT) ===\n";
 
-    double taus[15] = {0.5, 0.5001, 0.5005, 0.501, 0.505, 0.51, 0.55, 0.7, 1.0, 1.5, 2.0, 5.0, 10.0, 50.0, 100.0};
+    //double taus[15] = {0.5, 0.5001, 0.5005, 0.501, 0.505, 0.51, 0.55, 0.7, 1.0, 1.5, 2.0, 5.0, 10.0, 50.0, 100.0};
+    double taus[3] = {0.52, 0.53, 0.54};
     const double kBT = 1.0/3000.0;
 
     for(double tau_target : taus){
