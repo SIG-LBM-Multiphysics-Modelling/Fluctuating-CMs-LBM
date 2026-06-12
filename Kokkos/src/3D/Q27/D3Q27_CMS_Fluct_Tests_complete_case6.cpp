@@ -50,7 +50,7 @@ struct D3Q27{
 
 struct Params{
     double rho0 = 1.0;
-    double U0 = 0.1;
+    double U0 = 0.01;
     int nx = 100;
     int ny = 100;
     int nz = 100;
@@ -441,7 +441,7 @@ static void case6_tgv_3d(){
     p.kBT = 1e-5;
     p.finalize();
     p.nsteps = int(20.0*p.T_ref);
-    p.n_out = 1;
+    p.n_out = int(0.1*p.T_ref);
 
     namespace fs = std::filesystem;
     fs::path dirname = "./TGV3D";
@@ -547,7 +547,7 @@ stats_out << "it t_over_Tref energy enstrophy\n";
                       << " ens=" << enstrophy
                       << "\n";
 
-            //if(plot_vtk) write_vtk(it);
+            if(plot_vtk) write_vtk(it);
         }  
     }
 }
