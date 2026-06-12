@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  11 JUN 2026 17:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.12.12)  12 JUN 2026 08:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -167,11 +167,11 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 168.
 Package epstopdf Info: Source file: <Test6_zoom2-inc.eps>
-(epstopdf)                    date: 2026-06-11 17:13:43
-(epstopdf)                    size: 18520 bytes
+(epstopdf)                    date: 2026-06-12 08:31:40
+(epstopdf)                    size: 18637 bytes
 (epstopdf)             Output file: <Test6_zoom2-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-11 17:13:14
-(epstopdf)                    size: 3962 bytes
+(epstopdf)                    date: 2026-06-11 17:13:45
+(epstopdf)                    size: 3959 bytes
 (epstopdf)             Command: <repstopdf --outfile=Test6_zoom2-inc-eps-conver
 ted-to.pdf Test6_zoom2-inc.eps>
 (epstopdf)             \includegraphics on input line 169.
@@ -179,8 +179,8 @@ runsystem(repstopdf --outfile=Test6_zoom2-inc-eps-converted-to.pdf Test6_zoom2-
 inc.eps)...executed safely (allowed).
 
 Package epstopdf Info: Result file: <Test6_zoom2-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-06-11 17:13:45
-(epstopdf)                    size: 3959 bytes.
+(epstopdf)                    date: 2026-06-12 08:31:45
+(epstopdf)                    size: 4343 bytes.
 <Test6_zoom2-inc-eps-converted-to.pdf, id=1, 255.95625pt x 170.6375pt>
 File: Test6_zoom2-inc-eps-converted-to.pdf Graphic file (type pdf)
 <use Test6_zoom2-inc-eps-converted-to.pdf>
@@ -200,7 +200,7 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/20
 21/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/202
 1/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on Test6_zoom2.pdf (1 page, 24399 bytes).
+Output written on Test6_zoom2.pdf (1 page, 24782 bytes).
 PDF statistics:
  21 PDF objects out of 1000 (max. 8388607)
  12 compressed objects within 1 object stream
